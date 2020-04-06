@@ -10,6 +10,10 @@ class Color
 			Yellow,
 			Orange,
 			Purple,
+			Mint,
+			Peanut,
+			Lollypop,
+			IceCream,
 			Empty
 		};
 };
