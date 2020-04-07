@@ -123,7 +123,7 @@ int Board::GetNextColorSpaceIndex(int currIndex, const Card& card) const
 			}
 		}
 
-		if(IsShortcutAt(nextIndex)) 
+		if (IsShortcutAt(nextIndex)) 
 		{
 			return GetShortcutAt(nextIndex);
 		}
