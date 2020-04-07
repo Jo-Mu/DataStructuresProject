@@ -36,9 +36,11 @@ class Board
 	public:
 		void AddSpace(Color::TileColor color);
 		void AddLoseTurnSpace(Color::TileColor color);
+		void LinkSpaces(int index1, int index2);
 		bool IsShortcutAt(int index) const;
 		bool IsTurnLostAt(int index) const;
 		Color::TileColor GetColorAt(int index) const;
+		int GetShortcutAt(int index) const;
 		int GetNextColorSpaceIndex(int currIndex, const Card& card) const;
 	private:
 		std::vector<Space> brd;

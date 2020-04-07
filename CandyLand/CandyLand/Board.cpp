@@ -36,6 +36,15 @@ void Board::AddLoseTurnSpace(Color::TileColor color)
 	brd.emplace_back(Space(color, true));
 }
 
+void Board::LinkSpaces(int index1, int index2)
+{
+	if (index1 >= 0 && index1 < brd.size() && index2 >= 0 && index2 < brd.size())
+	{
+		brd[index1].SetShortcutIndex(index2);
+		brd[index2].SetShortcutIndex(index1);
+	}
+}
+
 bool Board::IsShortcutAt(int index) const
 {
 	if (index >= 0 && index < brd.size())
@@ -64,6 +73,19 @@ Color::TileColor Board::GetColorAt(int index) const
 	}
 
 	return Color::TileColor::Empty;
+}
+
+int Board::GetShortcutAt(int index) const
+{
+	if (index >= 0 && index < brd.size())
+	{
+		if (brd[index].IsShortcut()) 
+		{
+			return brd[index].GetShortcutIndex();
+		}
+	}
+
+	return index;
 }
 
 int Board::GetNextColorSpaceIndex(int currIndex, const Card& card) const
@@ -99,6 +121,11 @@ int Board::GetNextColorSpaceIndex(int currIndex, const Card& card) const
 			{
 				nextIndex++;
 			}
+		}
+
+		if(IsShortcutAt(nextIndex)) 
+		{
+			return GetShortcutAt(nextIndex);
 		}
 
 		return nextIndex;
