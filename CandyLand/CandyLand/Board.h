@@ -41,6 +41,8 @@ class Board
 		bool IsTurnLostAt(int index) const;
 		Color::TileColor GetColorAt(int index) const;
 		int GetShortcutAt(int index) const;
+		int GetTotalSpaces() const;
+		int GetLastIndex() const;
 		int GetNextColorSpaceIndex(int currIndex, const Card& card) const;
 	private:
 		std::vector<Space> brd;

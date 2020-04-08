@@ -88,6 +88,16 @@ int Board::GetShortcutAt(int index) const
 	return index;
 }
 
+int Board::GetTotalSpaces() const
+{
+	return brd.size();
+}
+
+int Board::GetLastIndex() const
+{
+	return (GetTotalSpaces() - 1);
+}
+
 int Board::GetNextColorSpaceIndex(int currIndex, const Card& card) const
 {
 	Color::TileColor cardColor = card.GetColor();
@@ -103,14 +113,14 @@ int Board::GetNextColorSpaceIndex(int currIndex, const Card& card) const
 			}
 		}
 
-		return (brd.size() - 1);
+		return GetLastIndex();
 	}
 	else 
 	{
 		int nextIndex = currIndex + 1;
 		int quantity = card.GetQuantity();
 
-		while (nextIndex < (brd.size() - 1) && quantity > 0) 
+		while (nextIndex < GetLastIndex() && quantity > 0) 
 		{
 			if (cardColor == GetColorAt(nextIndex))
 			{
