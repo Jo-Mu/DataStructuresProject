@@ -5,6 +5,11 @@ int Player::GetSpaceIndex() const
 	return spaceIndex;
 }
 
+int Player::GetPlayerNumber() const
+{
+	return playerNumber;
+}
+
 void Player::SetSpaceIndex(int index)
 {
 	spaceIndex = index;
