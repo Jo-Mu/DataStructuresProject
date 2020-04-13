@@ -259,9 +259,8 @@ int Board::GetLastIndex() const
 
 	returns an int
 */
-int Board::GetNextColorSpaceIndex(int currIndex, const Card& card, bool& outTakeShortcut)
+int Board::GetNextColorSpaceIndex(int currIndex, const Card& card, bool& outTakeShortcut) const
 {
-	LeaveSpaceAt(currIndex);
 	outTakeShortcut = false;
 	Color::TileColor cardColor = card.GetColor();
 
@@ -283,7 +282,6 @@ int Board::GetNextColorSpaceIndex(int currIndex, const Card& card, bool& outTake
 					}
 				}
 
-				OccupySpaceAt(index);
 				return index;
 			}
 		}
@@ -325,7 +323,6 @@ int Board::GetNextColorSpaceIndex(int currIndex, const Card& card, bool& outTake
 			}
 		}
 
-		OccupySpaceAt(nextIndex);
 		return nextIndex;
 	}
 }

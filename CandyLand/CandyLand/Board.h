@@ -190,7 +190,7 @@ class Board
 
 			returns an int
 		*/
-		int GetNextColorSpaceIndex(int currIndex, const Card& card, bool& outTakeShortcut);
+		int GetNextColorSpaceIndex(int currIndex, const Card& card, bool& outTakeShortcut) const;
 	private:
 		std::vector<Space> brd; //The board as a colllection of Space objects
 };

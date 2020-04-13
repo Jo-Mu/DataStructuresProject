@@ -193,7 +193,9 @@ Board CreateCandyLandBoard()
 void MovePlayer(Player& player, const Card& card, Board& brd) 
 {
 	bool shortcutTaken = false;
+	brd.LeaveSpaceAt(player.GetSpaceIndex());
 	player.SetSpaceIndex(brd.GetNextColorSpaceIndex(player.GetSpaceIndex(), card, shortcutTaken));
+	brd.OccupySpaceAt(player.GetSpaceIndex());
 
 	if (shortcutTaken) 
 	{
