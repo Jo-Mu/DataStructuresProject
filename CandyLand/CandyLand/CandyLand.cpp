@@ -15,8 +15,8 @@
 #include "Deck.h"
 #include <map>
 #include <string>
-#include <stdlib.h>
 #include <chrono>
+#include <random>
 
 /*
 	Prints a given board in reference to given Players
@@ -231,9 +231,13 @@ void LoadDeck(Deck& deck)
 	cardTotals["LOLLYPOP"] = 1;
 	cardTotals["ICE CREAM"] = 1;
 
+	std::random_device rd;
+	std::mt19937 rng(rd());
+
 	while (!cardPool.empty()) 
 	{
-		int index = rand() % (int)cardPool.size();
+		std::uniform_int_distribution<int> dist(0, ((int)cardPool.size() - 1));
+		int index = dist(rng);
 		deck.AddCard(cardPool[index]);
 		cardTotals[cardPool[index].ToString()]--;
 		
@@ -448,36 +452,49 @@ int CandyLandForOlderPlayers(int numPlayers)
 	return turns;
 }
 
+/*
+	Runs several games of Candy Land and Gandy Land For Older Players with
+	a given amount of players and prints out the average turns and runtimes
+	of the 2 with a given amount of games
+
+	no return
+*/
+void RuntimeCompare(int numPlayers, int totalGames)
+{
+	int totalStrdCLTurns = 0;
+	double totalStrdCLRuntime = 0.0;
+	int totalOldrCLTurns = 0;
+	double totalOldrCLRuntime = 0.0;
+
+	for (int game = 0; game < totalGames; game++)
+	{
+		auto begin = std::chrono::steady_clock::now();
+		totalStrdCLTurns += CandyLand(numPlayers);
+		auto end = std::chrono::steady_clock::now();
+		totalStrdCLRuntime += (double)std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+
+		begin = std::chrono::steady_clock::now();
+		totalOldrCLTurns += CandyLandForOlderPlayers(numPlayers);
+		end = std::chrono::steady_clock::now();
+		totalOldrCLRuntime += (double)std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+	}
+
+	float avgStrdCLTurns = (float)totalStrdCLTurns / (float)totalGames;
+	double avgStrdCLRuntime = totalStrdCLRuntime / (double)totalGames;
+	float avgOldrCLTurns = (float)totalOldrCLTurns / (float)totalGames;
+	double avgOldrCLRuntime = totalOldrCLRuntime / (double)totalGames;
+
+	std::cout << "Games Played: " << totalGames << std::endl;
+	std::cout << "Average Candy Land Turns: " << avgStrdCLTurns << std::endl;
+	std::cout << "Average Candy Land Runtime: " << avgStrdCLRuntime << " ms" << std::endl;
+	std::cout << "Average Candy Land For Older Players Turns: " << avgOldrCLTurns << std::endl;
+	std::cout << "Average Candy Land For Older Players Runtime: " << avgOldrCLRuntime << " ms" << std::endl;
+}
+
 int main()
 {
 	const int NUM_PLAYERS = 4;
 	const int TOTAL_GAMES = 10;
 
-	int totalStrdCLTurns = 0;
-	double totalStrdCLRuntime = 0.0;
-	int totalOldrCLTurns = 0;
-	double totalOldrCLRuntime = 0.0;
-	for (int game = 0; game < TOTAL_GAMES; game++) 
-	{
-		auto begin = std::chrono::steady_clock::now();
-		totalStrdCLTurns += CandyLand(NUM_PLAYERS);
-		auto end = std::chrono::steady_clock::now();
-		totalStrdCLRuntime += (double)std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
-
-		begin = std::chrono::steady_clock::now();
-		totalOldrCLTurns += CandyLandForOlderPlayers(NUM_PLAYERS);
-		end = std::chrono::steady_clock::now();
-		totalOldrCLRuntime += (double)std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
-	}
-
-	float avgStrdCLTurns = (float)totalStrdCLTurns / (float)TOTAL_GAMES;
-	double avgStrdCLRuntime = totalStrdCLRuntime / (double)TOTAL_GAMES;
-	float avgOldrCLTurns = (float)totalOldrCLTurns / (float)TOTAL_GAMES;
-	double avgOldrCLRuntime = totalOldrCLRuntime / (double)TOTAL_GAMES;
-
-	std::cout << "Games Played: " << TOTAL_GAMES << std::endl;
-	std::cout << "Average Candy Land Turns: " << avgStrdCLTurns << std::endl;
-	std::cout << "Average Candy Land Runtime: " << avgStrdCLRuntime << " ms" << std::endl;
-	std::cout << "Average Candy Land For Older Players Turns: " << avgOldrCLTurns << std::endl;
-	std::cout << "Average Candy Land For Older Players Runtime: " << avgOldrCLRuntime << " ms" << std::endl;
+	RuntimeCompare(NUM_PLAYERS, TOTAL_GAMES);
 }
