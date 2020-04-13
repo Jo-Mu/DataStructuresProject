@@ -155,12 +155,14 @@
     <ClCompile Include="CandyLand.cpp" />
     <ClCompile Include="Card.cpp" />
     <ClCompile Include="Color.cpp" />
+    <ClCompile Include="Deck.cpp" />
     <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Board.h" />
     <ClInclude Include="Card.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="Deck.h" />
     <ClInclude Include="Player.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

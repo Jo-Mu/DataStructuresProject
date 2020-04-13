@@ -12,6 +12,10 @@
 #include "Color.h"
 #include "Board.h"
 #include "Player.h"
+#include "Deck.h"
+#include <map>
+#include <string>
+#include <stdlib.h>
 #include <chrono>
 
 /*
@@ -196,6 +200,51 @@ Board CreateCandyLandBoard()
 }
 
 /*
+	Loads a given deck with a preset pool of cards at random
+
+	no return
+*/
+void LoadDeck(Deck& deck) 
+{
+	std::vector<Card> cardPool{ Card(Color::TileColor::Red, 1), Card(Color::TileColor::Red, 2)
+	, Card(Color::TileColor::Blue, 1), Card(Color::TileColor::Blue, 2),  Card(Color::TileColor::Green, 1)
+	, Card(Color::TileColor::Green, 2), Card(Color::TileColor::Purple, 1), Card(Color::TileColor::Purple, 2)
+	, Card(Color::TileColor::Yellow, 1), Card(Color::TileColor::Yellow, 2), Card(Color::TileColor::Orange, 1)
+	, Card(Color::TileColor::Orange, 2), Card(Color::TileColor::Mint, 1), Card(Color::TileColor::Lollypop, 1)
+	, Card(Color::TileColor::Peanut, 1), Card(Color::TileColor::IceCream, 1) };
+
+	std::map<std::string, int> cardTotals;
+	cardTotals["RED"] = 3;
+	cardTotals["BLUE"] = 4;
+	cardTotals["GREEN"] = 4;
+	cardTotals["YELLOW"] = 4;
+	cardTotals["PURPLE"] = 3;
+	cardTotals["ORANGE"] = 4;
+	cardTotals["DOUBLE RED"] = 3;
+	cardTotals["DOUBLE GREEN"] = 3;
+	cardTotals["DOUBLE YELLOW"] = 3;
+	cardTotals["DOUBLE PURPLE"] = 3;
+	cardTotals["DOUBLE ORANGE"] = 3;
+	cardTotals["DOUBLE BLUE"] = 3;
+	cardTotals["MINT"] = 1;
+	cardTotals["PEANUT"] = 1;
+	cardTotals["LOLLYPOP"] = 1;
+	cardTotals["ICE CREAM"] = 1;
+
+	while (!cardPool.empty()) 
+	{
+		int index = rand() % (int)cardPool.size();
+		deck.AddCard(cardPool[index]);
+		cardTotals[cardPool[index].ToString()]--;
+		
+		if (cardTotals[cardPool[index].ToString()] <= 0) 
+		{
+			cardPool.erase(cardPool.begin() + index);
+		}
+	}
+}
+
+/*
 	Moves given player on a given Board based on a given Card
 
 	Special occurances will be printed out to the console
@@ -269,7 +318,8 @@ int CandyLand(int numPlayers)
 	}
 
 	Board brd = CreateCandyLandBoard();
-	//Create deck here
+	Deck deck;
+	LoadDeck(deck);
 
 	int turns = 0;
 	int playerTurn = 0;
@@ -285,8 +335,12 @@ int CandyLand(int numPlayers)
 		}
 		else 
 		{
-			//replace below with deck draw
-			Card card = Card(Color::TileColor::Red, 2);
+			if (deck.IsEmpty()) 
+			{
+				LoadDeck(deck);
+			}
+
+			Card card = deck.DrawCard();
 
 			std::cout << "Player " << players[playerTurn].GetPlayerNumber() << " drew "
 				<< card.ToString() << "! Updating Board." << std::endl;
@@ -331,7 +385,8 @@ int CandyLandForOlderPlayers(int numPlayers)
 	}
 
 	Board brd = CreateCandyLandBoard();
-	//Create deck here
+	Deck deck;
+	LoadDeck(deck);
 
 	int turns = 0;
 	int playerTurn = 0;
@@ -347,10 +402,19 @@ int CandyLandForOlderPlayers(int numPlayers)
 		}
 		else
 		{
-			//replace below with deck draw
-			Card card1 = Card(Color::TileColor::Red, 2);
-			//Replace below with deck draw
-			Card card2 = Card(Color::TileColor::Blue, 2);
+			if (deck.IsEmpty())
+			{
+				LoadDeck(deck);
+			}
+
+			Card card1 = deck.DrawCard();
+
+			if (deck.IsEmpty())
+			{
+				LoadDeck(deck);
+			}
+
+			Card card2 = deck.DrawCard();
 
 			std::cout << "Player " << players[playerTurn].GetPlayerNumber() << " drew ["
 				<< card1.ToString() << ", " << card2.ToString() 
