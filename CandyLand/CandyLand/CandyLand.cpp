@@ -209,6 +209,40 @@ void MovePlayer(Player& player, const Card& card, Board& brd)
 }
 
 /*
+	Chooses the better of two given cards when used on a given Board from
+	at given Player
+
+	returns a Card
+*/
+Card ChooseCard(Player& player, const Card& card1, const Card& card2, const Board& brd) 
+{
+	bool shortcutTaken = false;
+	int index1 = brd.GetNextColorSpaceIndex(player.GetSpaceIndex(), card1, shortcutTaken);
+	int index2 = brd.GetNextColorSpaceIndex(player.GetSpaceIndex(), card2, shortcutTaken);
+
+	if ((brd.IsTurnLostAt(index1) && brd.IsTurnLostAt(index2))
+		|| (!brd.IsTurnLostAt(index1) && !brd.IsTurnLostAt(index2)))
+	{
+		if (index1 > index2) 
+		{
+			return card1;
+		}
+		else 
+		{
+			return card2;
+		}
+	}
+	else if (brd.IsTurnLostAt(index1)) 
+	{
+		return card2;
+	}
+	else 
+	{
+		return card1;
+	}
+}
+
+/*
 	Plays a game of Candy Land
 
 	Players must reach the end to win
@@ -244,8 +278,8 @@ int CandyLand(int numPlayers)
 			//replace below with deck draw
 			Card card = Card(Color::TileColor::Red, 2);
 
-			std::cout << "Player " << players[playerTurn].GetPlayerNumber() << " drew a "
-				<< card.ToString() << " card!" << std::endl;
+			std::cout << "Player " << players[playerTurn].GetPlayerNumber() << " drew "
+				<< card.ToString() << "! Updating Board." << std::endl;
 
 			MovePlayer(players[playerTurn], card, brd);
 			PrintBoard(players, brd);
@@ -270,11 +304,83 @@ int CandyLand(int numPlayers)
 	return turns;
 }
 
+/*
+	Plays a game of Candy with the rules for older players drawing 2 cards and choosing 1
+
+	Players must reach the end to win
+
+	Will return an int of the amount of turns it takes for thr game to finish
+*/
+int CandyLandForOlderPlayers(int numPlayers)
+{
+	std::vector<Player> players;
+
+	for (int num = 1; num <= numPlayers; num++)
+	{
+		players.emplace_back(Player(num));
+	}
+
+	Board brd = CreateCandyLandBoard();
+	//Create deck here
+
+	int turns = 0;
+	int playerTurn = 0;
+	bool gameOver = false;
+
+	std::cout << "Starting Candy Land Game" << std::endl;
+
+	while (!gameOver)
+	{
+		if (players[playerTurn].IsTurnLost())
+		{
+			players[playerTurn].WaitLostTurn();
+		}
+		else
+		{
+			//replace below with deck draw
+			Card card1 = Card(Color::TileColor::Red, 2);
+			//Replace below with deck draw
+			Card card2 = Card(Color::TileColor::Blue, 2);
+
+			std::cout << "Player " << players[playerTurn].GetPlayerNumber() << " drew ["
+				<< card1.ToString() << ", " << card2.ToString() 
+				<< "]! Updating Board." << std::endl;
+
+			Card chosenCard = ChooseCard(players[playerTurn], card1, card2, brd);
+
+			std::cout << "Player " << players[playerTurn].GetPlayerNumber() << " chose "
+				<< chosenCard.ToString() << "! Updating Board." << std::endl;
+
+			MovePlayer(players[playerTurn], chosenCard, brd);
+			PrintBoard(players, brd);
+
+			if (players[playerTurn].GetSpaceIndex() == brd.GetLastIndex())
+			{
+				std::cout << "Player " << players[playerTurn].GetPlayerNumber() << " WON!\n\n";
+				gameOver = true;
+			}
+		}
+
+		playerTurn++;
+
+		if (playerTurn >= numPlayers)
+		{
+			playerTurn = 0;
+		}
+
+		turns++;
+	}
+
+	return turns;
+}
+
 int main()
 {
 	const int NUM_PLAYERS = 4;
 
     std::cout << "Hello Candy Land!\n";
 	int loops = CandyLand(NUM_PLAYERS);
+	std::cout << loops << " Loops!" << std::endl;
+	loops = CandyLandForOlderPlayers(NUM_PLAYERS);
 	std::cout << loops << " Loops!" << std::endl;
 }
