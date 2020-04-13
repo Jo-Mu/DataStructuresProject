@@ -24,6 +24,7 @@ void PrintBoard(const std::vector<Player>& players, const Board& brd)
 			{
 				std::cout << player.GetPlayerNumber();
 				playerFound = true;
+				break;
 			}
 		}
 
@@ -184,6 +185,27 @@ Board CreateCandyLandBoard()
 	return brd;
 }
 
+/*
+	Moves given player on a given Board based on a given Card
+
+	Special occurances will be printed out to the console
+*/
+void MovePlayer(Player& player, const Card& card, Board& brd) 
+{
+	bool shortcutTaken = false;
+	player.SetSpaceIndex(brd.GetNextColorSpaceIndex(player.GetSpaceIndex(), card, shortcutTaken));
+
+	if (shortcutTaken) 
+	{
+		std::cout << "Player " << player.GetPlayerNumber() << " used a shortcut!" << std::endl;
+	}
+	if (brd.IsTurnLostAt(player.GetSpaceIndex())) 
+	{
+		player.LoseTurn();
+		std::cout << "Player " << player.GetPlayerNumber() << " lost a turn!" << std::endl;
+	}
+}
+
 int main()
 {
 	const int NUM_PLAYERS = 4;
@@ -193,5 +215,6 @@ int main()
 	std::vector<Player> players;
 	players.emplace_back(Player(1));
 	players[0].SetSpaceIndex(0);
+	MovePlayer(players[0], Card(Color::TileColor::Blue, 1), brd);
 	PrintBoard(players, brd);
 }
