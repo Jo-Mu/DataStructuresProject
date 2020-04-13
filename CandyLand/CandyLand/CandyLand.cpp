@@ -208,15 +208,73 @@ void MovePlayer(Player& player, const Card& card, Board& brd)
 	}
 }
 
+/*
+	Plays a game of Candy Land
+
+	Players must reach the end to win
+
+	Will return an int of the amount of turns it takes for thr game to finish
+*/
+int CandyLand(int numPlayers) 
+{
+	std::vector<Player> players;
+
+	for (int num = 1; num <= numPlayers; num++) 
+	{
+		players.emplace_back(Player(num));
+	}
+
+	Board brd = CreateCandyLandBoard();
+	//Create deck here
+
+	int turns = 0;
+	int playerTurn = 0;
+	bool gameOver = false;
+
+	std::cout << "Starting Candy Land Game" << std::endl;
+
+	while (!gameOver) 
+	{
+		if (players[playerTurn].IsTurnLost()) 
+		{
+			players[playerTurn].WaitLostTurn();
+		}
+		else 
+		{
+			//replace below with deck draw
+			Card card = Card(Color::TileColor::Red, 2);
+
+			std::cout << "Player " << players[playerTurn].GetPlayerNumber() << " drew a "
+				<< card.ToString() << " card!" << std::endl;
+
+			MovePlayer(players[playerTurn], card, brd);
+			PrintBoard(players, brd);
+
+			if (players[playerTurn].GetSpaceIndex() == brd.GetLastIndex()) 
+			{
+				std::cout << "Player " << players[playerTurn].GetPlayerNumber() << " WON!\n\n";
+				gameOver = true;
+			}
+		}
+
+		playerTurn++;
+
+		if (playerTurn >= numPlayers) 
+		{
+			playerTurn = 0;
+		}
+
+		turns++;
+	}
+
+	return turns;
+}
+
 int main()
 {
 	const int NUM_PLAYERS = 4;
 
     std::cout << "Hello Candy Land!\n";
-	Board brd = CreateCandyLandBoard();
-	std::vector<Player> players;
-	players.emplace_back(Player(1));
-	players[0].SetSpaceIndex(0);
-	MovePlayer(players[0], Card(Color::TileColor::Blue, 1), brd);
-	PrintBoard(players, brd);
+	int loops = CandyLand(NUM_PLAYERS);
+	std::cout << loops << " Loops!" << std::endl;
 }
