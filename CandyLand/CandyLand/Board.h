@@ -67,11 +67,30 @@ class Board
 					Sets isShortcut to true
 				*/
 				void SetShortcutIndex(int index);
+				/*
+					Checks if Space is Occupied
+
+					returns a boolean
+				*/
+				bool IsOccupied() const;
+				/*
+					Occupuies Space; sets isOccupied to true
+
+					no return
+				*/
+				void Occupy();
+				/*
+					Leave Space; sets isOccupied to false
+
+					no return
+				*/
+				void Leave();
 
 			private:
 				Color::TileColor color; //TileColor of the space
 				bool loseTurn = false; //Is Space a lose turn space
 				bool isShortcut = false; //Is Space a shortcut
+				bool isOccupied = false; //Is Space occupied
 				int shortcutIndex = -1; //Index of the shortcut, -1 if none
 		};
 	public:
@@ -97,6 +116,22 @@ class Board
 		*/
 		void LinkSpaces(int index1, int index2);
 		/*
+			Occupies the Space at the given index
+
+			If index outside of Board then nothing happens
+
+			nor return
+		*/
+		void OccupySpaceAt(int index);
+		/*
+			Leaves the Space at the given index
+
+			If index outside of Board then nothing happens
+
+			nor return
+		*/
+		void LeaveSpaceAt(int index);
+		/*
 			Checks if there is a shortcut Space at the given index
 
 			returns a boolean
@@ -108,6 +143,14 @@ class Board
 			returns a boolean
 		*/
 		bool IsTurnLostAt(int index) const;
+		/*
+			Checks if Space at the given index is occupied
+
+			Returns false if not occupied or index is outside Board
+
+			returns a boolean
+		*/
+		bool IsOccupiedAt(int index) const;
 		/*
 			Gets the TileColor of a Space at the given index
 
@@ -140,13 +183,14 @@ class Board
 		int GetLastIndex() const;
 		/*
 			Gets the index of the next space using a given Card and the current
-			index of the player
+			index of the player as well as a update a given boolean variable is a shorcut
+			is taken
 
-			Takes into account shortcuts
+			Takes into account shortcuts and occupied spaces
 
 			returns an int
 		*/
-		int GetNextColorSpaceIndex(int currIndex, const Card& card) const;
+		int GetNextColorSpaceIndex(int currIndex, const Card& card, bool& outTakeShortcut);
 	private:
 		std::vector<Space> brd; //The board as a colllection of Space objects
 };

@@ -53,6 +53,31 @@ void Board::Space::SetShortcutIndex(int index)
 }
 
 /*
+	Checks if Space is Occupied
+
+	returns a boolean
+*/
+bool Board::Space::IsOccupied() const
+{
+	return isOccupied;
+}
+
+/*
+	Occupuies Space; sets isOccupied to true
+
+	no return
+*/
+void Board::Space::Occupy()
+{
+	isOccupied = true;
+}
+
+void Board::Space::Leave()
+{
+	isOccupied = false;
+}
+
+/*
 	Creates a new Space in the board with the given TileColor
 
 	no return
@@ -90,6 +115,36 @@ void Board::LinkSpaces(int index1, int index2)
 }
 
 /*
+	Occupies the Space at the given index
+
+	If index outside of Board then nothing happens
+
+	nor return
+*/
+void Board::OccupySpaceAt(int index)
+{
+	if (index >= 0 && index < GetTotalSpaces())
+	{
+		brd[index].Occupy();
+	}
+}
+
+/*
+	Leaves the Space at the given index
+
+	If index outside of Board then nothing happens
+
+	nor return
+*/
+void Board::LeaveSpaceAt(int index)
+{
+	if (index >= 0 && index < GetTotalSpaces())
+	{
+		brd[index].Leave();
+	}
+}
+
+/*
 	Checks if there is a shortcut Space at the given index
 
 	returns a boolean
@@ -114,6 +169,23 @@ bool Board::IsTurnLostAt(int index) const
 	if (index >= 0 && index < GetTotalSpaces())
 	{
 		return brd[index].IsLoseTurn();
+	}
+
+	return false;
+}
+
+/*
+	Checks if Space at the given index is occupied
+
+	Returns false if not occupied or index is outside Board
+
+	returns a boolean
+*/
+bool Board::IsOccupiedAt(int index) const
+{
+	if (index >= 0 && index < GetTotalSpaces())
+	{
+		return brd[index].IsOccupied();
 	}
 
 	return false;
@@ -180,14 +252,17 @@ int Board::GetLastIndex() const
 
 /*
 	Gets the index of the next space using a given Card and the current
-	index of the player
+	index of the player as well as a update a given boolean variable is a shorcut
+	is taken
 
-	Takes into account shortcuts
+	Takes into account shortcuts and occupied spaces
 
 	returns an int
 */
-int Board::GetNextColorSpaceIndex(int currIndex, const Card& card) const
+int Board::GetNextColorSpaceIndex(int currIndex, const Card& card, bool& outTakeShortcut)
 {
+	LeaveSpaceAt(currIndex);
+	outTakeShortcut = false;
 	Color::TileColor cardColor = card.GetColor();
 
 	if (cardColor == Color::TileColor::Mint || cardColor == Color::TileColor::Lollypop
@@ -197,6 +272,18 @@ int Board::GetNextColorSpaceIndex(int currIndex, const Card& card) const
 		{
 			if (cardColor == GetColorAt(index)) 
 			{
+				while (IsOccupiedAt(index) && index != GetLastIndex()) 
+				{
+					index++;
+
+					if (!IsOccupiedAt(index) && IsShortcutAt(index))
+					{
+						index = GetShortcutAt(index);
+						outTakeShortcut = true;
+					}
+				}
+
+				OccupySpaceAt(index);
 				return index;
 			}
 		}
@@ -221,11 +308,24 @@ int Board::GetNextColorSpaceIndex(int currIndex, const Card& card) const
 			}
 		}
 
-		if (IsShortcutAt(nextIndex)) 
+		if (!IsOccupiedAt(nextIndex) && IsShortcutAt(nextIndex))
 		{
-			return GetShortcutAt(nextIndex);
+			nextIndex = GetShortcutAt(nextIndex);
+			outTakeShortcut = true;
 		}
 
+		while (IsOccupiedAt(nextIndex) && nextIndex != GetLastIndex()) 
+		{
+			nextIndex++;
+
+			if (!IsOccupiedAt(nextIndex) && IsShortcutAt(nextIndex)) 
+			{
+				nextIndex = GetShortcutAt(nextIndex);
+				outTakeShortcut = true;
+			}
+		}
+
+		OccupySpaceAt(nextIndex);
 		return nextIndex;
 	}
 }
