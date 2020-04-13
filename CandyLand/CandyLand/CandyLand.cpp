@@ -4,30 +4,30 @@
 #include "Board.h"
 #include "Player.h"
 
-int main()
-{
-    std::cout << "Hello Candy Land!\n";
-}
+/*
+	Prints a given board in reference to given Players
 
-static void PrintBoard(const std::vector<Player>& players, const Board& brd) 
+	no return
+*/
+void PrintBoard(const std::vector<Player>& players, const Board& brd)
 {
 	const int MAX_COLS = 20;
 	int cols = 0;
 
-	for (int index = 0; index < brd.GetTotalSpaces(); index++) 
+	for (int index = 0; index < brd.GetTotalSpaces(); index++)
 	{
 		bool playerFound = false;
 
 		for (const Player& player : players)
 		{
-			if (player.GetSpaceIndex() == index) 
+			if (player.GetSpaceIndex() == index)
 			{
 				std::cout << player.GetPlayerNumber();
 				playerFound = true;
 			}
 		}
 
-		if (!playerFound) 
+		if (!playerFound)
 		{
 			if (brd.IsShortcutAt(index))
 			{
@@ -37,52 +37,57 @@ static void PrintBoard(const std::vector<Player>& players, const Board& brd)
 			{
 				std::cout << "X";
 			}
-			else 
+			else
 			{
 				switch (brd.GetColorAt(index))
 				{
-					case Color::TileColor::Mint:
-						std::cout << "M";
-						break;
-					case Color::TileColor::IceCream:
-						std::cout << "I";
-						break;
-					case Color::TileColor::Lollypop:
-						std::cout << "L";
-						break;
-					case Color::TileColor::Peanut:
-						std::cout << "P";
-						break;
-					case Color::TileColor::Empty:
-						std::cout << "K";
-						break;
-					default:
-						std::cout << "_";
-						break;
+				case Color::TileColor::Mint:
+					std::cout << "M";
+					break;
+				case Color::TileColor::IceCream:
+					std::cout << "I";
+					break;
+				case Color::TileColor::Lollypop:
+					std::cout << "L";
+					break;
+				case Color::TileColor::Peanut:
+					std::cout << "P";
+					break;
+				case Color::TileColor::Empty:
+					std::cout << "K";
+					break;
+				default:
+					std::cout << "_";
+					break;
 				}
 			}
 		}
 
 		cols++;
 
-		if (cols >= MAX_COLS) 
+		if (cols >= MAX_COLS)
 		{
 			std::cout << "\n";
 			cols = 0;
 		}
 	}
 
-	if (cols == 0) 
+	if (cols == 0)
 	{
 		std::cout << "\n";
 	}
-	else 
+	else
 	{
 		std::cout << "\n\n";
 	}
 }
 
-static Board CreateCandyLandBoard() 
+/*
+	Creates a Board in the traditional format of Candy Land
+
+	returns a Board
+*/
+Board CreateCandyLandBoard()
 {
 	const int SHORTCUT_1_BEGIN = 3;
 	const int SHORTCUT_1_END = 35;
@@ -177,4 +182,16 @@ static Board CreateCandyLandBoard()
 	brd.LinkSpaces(SHORTCUT_2_BEGIN, SHORTCUT_2_END);
 
 	return brd;
+}
+
+int main()
+{
+	const int NUM_PLAYERS = 4;
+
+    std::cout << "Hello Candy Land!\n";
+	Board brd = CreateCandyLandBoard();
+	std::vector<Player> players;
+	players.emplace_back(Player(1));
+	players[0].SetSpaceIndex(0);
+	PrintBoard(players, brd);
 }
