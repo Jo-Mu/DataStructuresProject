@@ -1,8 +1,18 @@
+/*
+	Project Statement 3: Candy Land
+	Jonathan Muniz
+	Brian Izquierdo
+
+	Code similates a game of Candy Land both standard rules and rules for older
+	players. The application will run several games with both rulsets and compare
+	the average turns and runtimes
+*/
 #include <iostream>
 #include <vector>
 #include "Color.h"
 #include "Board.h"
 #include "Player.h"
+#include <chrono>
 
 /*
 	Prints a given board in reference to given Players
@@ -327,7 +337,7 @@ int CandyLandForOlderPlayers(int numPlayers)
 	int playerTurn = 0;
 	bool gameOver = false;
 
-	std::cout << "Starting Candy Land Game" << std::endl;
+	std::cout << "Starting Candy Land For Older Players Game" << std::endl;
 
 	while (!gameOver)
 	{
@@ -377,10 +387,33 @@ int CandyLandForOlderPlayers(int numPlayers)
 int main()
 {
 	const int NUM_PLAYERS = 4;
+	const int TOTAL_GAMES = 10;
 
-    std::cout << "Hello Candy Land!\n";
-	int loops = CandyLand(NUM_PLAYERS);
-	std::cout << loops << " Loops!" << std::endl;
-	loops = CandyLandForOlderPlayers(NUM_PLAYERS);
-	std::cout << loops << " Loops!" << std::endl;
+	int totalStrdCLTurns = 0;
+	double totalStrdCLRuntime = 0.0;
+	int totalOldrCLTurns = 0;
+	double totalOldrCLRuntime = 0.0;
+	for (int game = 0; game < TOTAL_GAMES; game++) 
+	{
+		auto begin = std::chrono::steady_clock::now();
+		totalStrdCLTurns += CandyLand(NUM_PLAYERS);
+		auto end = std::chrono::steady_clock::now();
+		totalStrdCLRuntime += (double)std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+
+		begin = std::chrono::steady_clock::now();
+		totalOldrCLTurns += CandyLandForOlderPlayers(NUM_PLAYERS);
+		end = std::chrono::steady_clock::now();
+		totalOldrCLRuntime += (double)std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+	}
+
+	float avgStrdCLTurns = (float)totalStrdCLTurns / (float)TOTAL_GAMES;
+	double avgStrdCLRuntime = totalStrdCLRuntime / (double)TOTAL_GAMES;
+	float avgOldrCLTurns = (float)totalOldrCLTurns / (float)TOTAL_GAMES;
+	double avgOldrCLRuntime = totalOldrCLRuntime / (double)TOTAL_GAMES;
+
+	std::cout << "Games Played: " << TOTAL_GAMES << std::endl;
+	std::cout << "Average Candy Land Turns: " << avgStrdCLTurns << std::endl;
+	std::cout << "Average Candy Land Runtime: " << avgStrdCLRuntime << " ms" << std::endl;
+	std::cout << "Average Candy Land For Older Players Turns: " << avgOldrCLTurns << std::endl;
+	std::cout << "Average Candy Land For Older Players Runtime: " << avgOldrCLRuntime << " ms" << std::endl;
 }
