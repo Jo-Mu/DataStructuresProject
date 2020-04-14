@@ -1,8 +1,11 @@
+//File contains a class for Color and necessary enumerator for color
+
 #pragma once
 class Color
 {
 	public:
-		static enum class TileColor 
+		//Enumerator for the color of a tile
+		enum class TileColor 
 		{
 			Red,
 			Blue,
